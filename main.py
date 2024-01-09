@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 from customtkinter import CTkImage
 from tkinter import messagebox
 from model_formata import Formata
+from model_db import ModelBanco
 
 janela = ctk.CTk()
 
@@ -19,7 +20,7 @@ class Aplicacao:
         self.tela()
         self.tela_login()
         janela.mainloop()
-
+        
     def tema(self):
         # ctk.set_appearance_mode("dark")
         # ctk.set_default_color_theme("dark-blue")
@@ -31,20 +32,23 @@ class Aplicacao:
         janela.geometry("700x450")
         janela.title("Sistema de Academia")
         janela.iconbitmap("img/gym2.ico")
-        janela.resizable(False, False)
+        # janela.resizable(False, False)  
         
     def tela_login(self):
-        # Imagens
+        # Frame da Imagem
+        img_frame = ctk.CTkFrame(master=janela, width=350, height=400)
+        img_frame.pack(side=LEFT)
+        
+        label_titulo = ctk.CTkLabel(master=img_frame,text="Seja bem vindo ao sistema da \n Academia Marombinha",font=("Roboto", 25),text_color="#00B0F0")
+        label_titulo.place(x=20, y=10)
+        
         img = PhotoImage(file="img/logo1.png")
         label_img = ctk.CTkLabel(master=janela, image=img)
-        label_img.place(x=10, y=90)
-
-
-        label_titulo = ctk.CTkLabel(master=janela,text="Seja bem vindo ao sistema da \n Academia Marombinha",font=("Roboto", 25),text_color="#00B0F0")
-        label_titulo.place(x=25, y=10)
+        label_img.place(x=1, y=130)
+        
 
         # Frame do login
-        login_frame = ctk.CTkFrame(master=janela, width=340, height=400)
+        login_frame = ctk.CTkFrame(master=janela, width=350, height=400)
         login_frame.pack(side=RIGHT)
     
         # Frame logo menu
@@ -73,8 +77,65 @@ class Aplicacao:
         checkbox.place(x=25, y=230)
 
         def logar():
-            msg = messagebox.showinfo(title="Estado do Login", message="Usuário Logado com sucesso!")
+            
+            nome_usuario = usuario_entry.get()
+            senha = senha_entry.get()
+        
+        # Declara a conexão com o banco
+            conn = sqlite3.connect("academia.db")
+            c = conn.cursor()
+        
+        # Recupera a senha quando informado o login correto
+            try:
+                c.execute("SELECT senha FROM tb_usuario WHERE usuario = '{}'".format(nome_usuario))
+                senha_bd = c.fetchone()
+                print(nome_usuario,senha_bd[0])
+            except:
+                print("Usuario não cadastrado, favor veriricar!")
+            finally:
+                conn.close()
+            
+        # Validação do login e senha
+            if senha == senha_bd[0]:
+            # Remove a tela de login
+                login_frame.pack_forget()
+                img_frame.pack_forget()
+                label_titulo.pack_forget()
+
+        
+                # Cria a tela de inicial
+                inicial_frame = ctk.CTkFrame(master=janela, width=700, height=950)
+                inicial_frame.pack(side=RIGHT)
                 
+                label_inicial = ctk.CTkLabel(master=inicial_frame,text="Seja bem vindo ao sistema da Academia Marombinha",font=("Roboto", 25),text_color="#00B0F0")
+                label_inicial.place(x=25, y=15)
+                                
+                label = ctk.CTkLabel(master=inicial_frame, text="Sistema Logado", font=("Roboto",30))
+                label.place(x=25, y=85)
+                
+                # Insere data
+                date = Formata.obter_data_formatada(self)
+                data = ctk.CTkLabel(master=inicial_frame, text=f"Data: {date}", font=("Roboto",12))
+                data.place(x=25, y=55)
+                
+            
+                def logof():
+                    # Remove a tela de cadastrar
+                    inicial_frame.pack_forget()
+                    
+                    # Devolve a tela de login
+                    login_frame.pack(side=RIGHT)
+
+                logof_button = ctk.CTkButton(master=inicial_frame, text="Logof", width=185, height= 30,font=("Roboto", 18), fg_color="red",hover_color="#96080a", command=logof)
+                logof_button.place(x=25, y=180)
+                
+                
+                print("Usuário logado com sucesso!")
+            else:
+                msg = messagebox.showinfo(message="Usuario ou senha não conferem, favor veriricar!")
+             
+        
+
         login_button = ctk.CTkButton(master=login_frame, text="Login", width=300, command=logar)
         login_button.place(x=25, y=280)
 
@@ -82,6 +143,10 @@ class Aplicacao:
         cadastrar_span.place(x=25, y=330)
 
         def tela_cadastro():
+            # Garante que as tabelas existam
+            model_banco = ModelBanco()
+            model_banco.criar_tabelas()
+            
             # Remove a tela de login
             login_frame.pack_forget()
             
@@ -98,17 +163,14 @@ class Aplicacao:
             usuario_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite um usuario",width=300,font=("Roboto", 14))
             usuario_entry.place(x=25, y=85)
             
-            email_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite uma senha",width=300,font=("Roboto", 14), show="*")
-            email_entry.place(x=25, y=125)
+            senha_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite uma senha",width=300,font=("Roboto", 14), show="*")
+            senha_entry.place(x=25, y=125)
             
             nome_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite o nome completo",width=300,font=("Roboto", 14))
             nome_entry.place(x=25, y=165)
             
-            senha_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite um e-mail",width=300,font=("Roboto", 14))
-            senha_entry.place(x=25, y=205)
-            
-            # tdocumento_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Tipo do doc RG-CPF-Passaporte-Outros",width=300,font=("Roboto", 14))
-            # tdocumento_entry.place(x=25, y=245)
+            email_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite um E-mail",width=300,font=("Roboto", 14))
+            email_entry.place(x=25, y=205)
             
             opcoes_tdocumento = ["RG", "CPF", "Passaporte", "Outros"]
             tdocumento_entry = ttk.Combobox(master=cadastra_frame, values=opcoes_tdocumento, font=("Roboto", 14))
@@ -119,7 +181,6 @@ class Aplicacao:
             
             dtaniversario_entry = ctk.CTkEntry(master=cadastra_frame,placeholder_text="Digite a data de nascimento dd/mm/aaaa",width=300,font=("Roboto", 14))
             dtaniversario_entry.place(x=25, y=325)
-
 
             checkbox = ctk.CTkCheckBox(master=cadastra_frame, text="Aceitar termos e politicas")
             checkbox.place(x=25, y=365)
@@ -134,7 +195,7 @@ class Aplicacao:
             voltar_button = ctk.CTkButton(master=cadastra_frame, text="Voltar", width=145, fg_color="gray",hover_color="#333333", command=voltar)
             voltar_button.place(x=25, y=400)
             
-            def salvar():
+            def salvar():                
                 # Verifica se os campos obrigatórios estão preenchidos
                 if not usuario_entry.get() or not senha_entry.get() or not nome_entry.get() or not email_entry.get():
                     messagebox.showerror("Erro de Cadastro", "Todos os campos obrigatórios devem ser preenchidos.")

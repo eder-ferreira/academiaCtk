@@ -2,13 +2,15 @@ import sqlite3
 
 class ModelBanco:
     # ----------------------  CRIA BANCO ---------------------------------------
-    
+
     def __init__(self):
         self.conn = sqlite3.connect("academia.db")
         self.criar_tabelas()
+    
 
     def __del__(self):
         self.conn.close()
+        
         
     # ----------------------  CRIA TABELAS ---------------------------------------
     def criar_tabelas(self):
@@ -109,3 +111,13 @@ class ModelBanco:
 
         print("Banco de dados criado com sucesso!")
         print("Tabelas Aluno, Usuario, Funcionario, Cargo, Plano, Endereço criadas!")
+
+
+    # def login(usuario, senha):
+    #     conn = sqlite3.connect("academia.db")
+    #     c = conn.cursor()
+    #     c.execute("SELECT senha FROM tb_usuario WHERE usuario = ? AND senha = ?", (usuario, senha))
+    #     senha_bd = c.fetchone()
+    #     conn.close()
+    #     return senha_bd
+    #     msg = messagebox.showinfo(title="Estado do Login", message="Usuário Logado com sucesso!")
