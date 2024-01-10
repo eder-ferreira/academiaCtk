@@ -39,14 +39,15 @@ class Aplicacao:
         label_titulo = ctk.CTkLabel(master=img_frame,text="Seja bem vindo ao sistema da \n Academia Marombinha",font=("Roboto", 25),text_color="#00B0F0")
         label_titulo.place(x=20, y=10)
         
-        # img = PhotoImage(file="img/logo1.png")
-        # label_img = ctk.CTkLabel(master=janela, image=img, width=50, height=50)
-        # label_img.place(x=1, y=130)
         
-        img = PhotoImage(master=img_frame, file="img/logo1.png", width=330, height=350)
-        img = img.subsample(1)  # Subamostragem para redimensionar a imagem (ajuste conforme necessário)
-        label_img = ctk.CTkLabel(master=img_frame, image=img)
-        label_img.place(x=5, y=130)
+        img= ctk.CTkImage(Image.open(r"img/logo3.png"))
+        label_img = ctk.CTkLabel(master=img_frame, image=img, width=150, height=150)
+        label_img.place(x=1, y=130)
+        
+        # img = PhotoImage(master=img_frame, file="img/logo1.png", width=330, height=350)
+        # img = img.subsample(1)  # Subamostragem para redimensionar a imagem (ajuste conforme necessário)
+        # label_img = ctk.CTkLabel(master=img_frame, image=img)
+        # label_img.place(x=5, y=130)
 
         # Frame do login
         login_frame = ctk.CTkFrame(master=janela, width=345, height=400)
@@ -99,7 +100,7 @@ class Aplicacao:
         # Validação do login e senha
             if senha == senha_bd[0]:
                 
-            # Remove a tela de login
+            # Remove aas telas de imagem e login
                 login_frame.pack_forget()
                 img_frame.pack_forget()
   
@@ -120,25 +121,22 @@ class Aplicacao:
                 data.place(x=25, y=55)
                 
             
-                def logof():
+                def logon():
                     # Remove a tela de cadastrar
                     inicial_frame.pack_forget()
                     
-                    # Devolve a tela de login
+                    # Recupera as telas de imagem e login
                     login_frame.pack(side=RIGHT)
                     img_frame.pack(side=LEFT)
     
-
-                logof_button = ctk.CTkButton(master=inicial_frame, text="Logof", width=185, height= 30,font=("Roboto", 18), fg_color="red",hover_color="#96080a", command=logof)
-                logof_button.place(x=25, y=180)
+                logon_button = ctk.CTkButton(master=inicial_frame, text="Logof", width=185, height= 30,font=("Roboto", 18), fg_color="red",hover_color="#96080a", command=logon)
+                logon_button.place(x=25, y=180)
                 
                 
                 print("Usuário logado com sucesso!")
             else:
                 msg = messagebox.showinfo(message="Usuario ou senha não conferem, favor veriricar!")
-             
-        
-
+                
         login_button = ctk.CTkButton(master=login_frame, text="Login", width=300, command=logar)
         login_button.place(x=25, y=280)
 
