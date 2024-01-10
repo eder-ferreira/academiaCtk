@@ -6,7 +6,7 @@ import customtkinter as ctk
 from tkinter import *
 from PIL import Image, ImageTk
 from customtkinter import CTkImage
-from tkinter import messagebox
+from customtkinter import CTkLabel
 from model_formata import Formata
 from model_db import ModelBanco
 
@@ -21,10 +21,7 @@ class Aplicacao:
         self.tela_login()
         janela.mainloop()
         
-    def tema(self):
-        # ctk.set_appearance_mode("dark")
-        # ctk.set_default_color_theme("dark-blue")
-        
+    def tema(self):        
         ctk.set_appearance_mode("System")  # Modes: system (default), light, dark
         ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
 
@@ -36,19 +33,23 @@ class Aplicacao:
         
     def tela_login(self):
         # Frame da Imagem
-        img_frame = ctk.CTkFrame(master=janela, width=350, height=400)
+        img_frame = ctk.CTkFrame(master=janela, width=345, height=400)
         img_frame.pack(side=LEFT)
         
         label_titulo = ctk.CTkLabel(master=img_frame,text="Seja bem vindo ao sistema da \n Academia Marombinha",font=("Roboto", 25),text_color="#00B0F0")
         label_titulo.place(x=20, y=10)
         
-        img = PhotoImage(file="img/logo1.png")
-        label_img = ctk.CTkLabel(master=janela, image=img)
-        label_img.place(x=1, y=130)
+        # img = PhotoImage(file="img/logo1.png")
+        # label_img = ctk.CTkLabel(master=janela, image=img, width=50, height=50)
+        # label_img.place(x=1, y=130)
         
+        img = PhotoImage(master=img_frame, file="img/logo1.png", width=330, height=350)
+        img = img.subsample(1)  # Subamostragem para redimensionar a imagem (ajuste conforme necessário)
+        label_img = ctk.CTkLabel(master=img_frame, image=img)
+        label_img.place(x=5, y=130)
 
         # Frame do login
-        login_frame = ctk.CTkFrame(master=janela, width=350, height=400)
+        login_frame = ctk.CTkFrame(master=janela, width=345, height=400)
         login_frame.pack(side=RIGHT)
     
         # Frame logo menu
@@ -97,11 +98,11 @@ class Aplicacao:
             
         # Validação do login e senha
             if senha == senha_bd[0]:
+                
             # Remove a tela de login
                 login_frame.pack_forget()
                 img_frame.pack_forget()
-                label_titulo.pack_forget()
-
+  
         
                 # Cria a tela de inicial
                 inicial_frame = ctk.CTkFrame(master=janela, width=700, height=950)
@@ -125,6 +126,8 @@ class Aplicacao:
                     
                     # Devolve a tela de login
                     login_frame.pack(side=RIGHT)
+                    img_frame.pack(side=LEFT)
+    
 
                 logof_button = ctk.CTkButton(master=inicial_frame, text="Logof", width=185, height= 30,font=("Roboto", 18), fg_color="red",hover_color="#96080a", command=logof)
                 logof_button.place(x=25, y=180)
